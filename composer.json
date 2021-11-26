@@ -2,7 +2,7 @@
     "name": "chialab/cakephp-geometry",
     "description": "A CakePHP plugin to add geometry type.",
     "type": "cakephp-plugin",
-    "license": "UNLICENSED",
+    "license": "MIT",
     "require": {
         "php": ">=7.4",
         "cakephp/cakephp": "~4.2.0",
