@@ -6,7 +6,7 @@ namespace Chialab\Geometry;
 use Cake\Core\BasePlugin;
 use Cake\Core\PluginApplicationInterface;
 use Cake\Database\TypeFactory;
-use Chialab\Geometry\Type\GeometryType;
+use Chialab\Geometry\Database\Type\GeometryType;
 
 /**
  * Plugin for Chialab\Geometry

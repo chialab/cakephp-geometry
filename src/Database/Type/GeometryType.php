@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Chialab\Geometry\Type;
+namespace Chialab\Geometry\Database\Type;
 
 use Brick\Geo\Exception\GeometryException;
 use Brick\Geo\Exception\GeometryIOException;
