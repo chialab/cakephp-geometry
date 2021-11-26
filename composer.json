@@ -1,0 +1,37 @@
+{
+    "name": "chialab/cakephp-geometry",
+    "description": "A CakePHP plugin to add geometry type.",
+    "type": "cakephp-plugin",
+    "license": "UNLICENSED",
+    "require": {
+        "php": ">=7.4",
+        "cakephp/cakephp": "~4.2.0",
+        "cakephp/migrations": "^3.0",
+        "brick/geo": "^0.7.1"
+    },
+    "require-dev": {
+        "cakephp/cakephp-codesniffer": "~4.2.0",
+        "phpunit/phpunit": "^8.5 || ^9.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Chialab\\Geometry\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Chialab\\Geometry\\Test\\": "tests/",
+            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
+        }
+    },
+    "scripts": {
+        "check": [
+            "@test",
+            "@cs-check"
+        ],
+        "cs-check": "phpcs --colors -p  src/ tests/",
+        "cs-fix": "phpcbf --colors -p src/ tests/",
+        "stan": "phpstan analyse",
+        "test": "phpunit --colors=always"
+    }
+}
