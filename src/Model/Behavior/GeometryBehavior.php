@@ -19,6 +19,7 @@ class GeometryBehavior extends Behavior
      */
     protected $_defaultConfig = [
         'geometryField' => 'geometry',
+        'storedAs' => 'geometry',
         'implementedFinders' => [
             'geo' => 'findGeo',
         ],
@@ -47,17 +48,43 @@ class GeometryBehavior extends Behavior
     {
         $options = array_intersect_key($options, array_flip(['intersects', 'within']));
 
-        $dbGeom = new FunctionExpression('ST_GeomFromText', [$this->_table->aliasField($this->getConfigOrFail('geometryField'))]);
+        $dbField = $this->_table->aliasField($this->getConfigOrFail('geometryField'));
+        $dbGeom = [$dbField => 'identifier'];
+        switch ($this->getConfig('storedAs')) {
+            case 'geometry':
+                break;
+            case 'text':
+            case 'wkt':
+                $dbGeom = [new FunctionExpression('ST_GeomFromText', $dbGeom)];
+                break;
+            case 'binary':
+            case 'wkb':
+                $dbGeom = [new FunctionExpression('ST_GeomFromWKB', $dbGeom)];
+                break;
+            default:
+                throw new \RuntimeException('Invalid geometry storage format');
+        }
+
         foreach ($options as $op => $geom) {
             switch ($op) {
                 case 'intersects':
-                    $geom = Geometry::parse($geom)->getGeometry();
-                    $query = $query->where(fn (QueryExpression $exp) => $exp->add(new FunctionExpression('ST_Intersects', [$dbGeom => 'identifier', $geom], ['string', 'geometry'])));
+                    $geom = Geometry::parse($geom)->getGeometry()->withSRID(0);
+
+                    $query = $query->where(fn (QueryExpression $exp) => $exp
+                        ->isNotNull($dbField)
+                        ->notEq($dbField, '', 'string')
+                        ->add(new FunctionExpression('ST_Intersects', array_merge($dbGeom, ['test' => $geom]), ['test' => 'geometry']))
+                    );
 
                     break;
                 case 'within':
-                    $geom = Geometry::parse($geom)->getGeometry();
-                    $query = $query->where(fn (QueryExpression $exp) => $exp->add(new FunctionExpression('ST_Within', [$dbGeom => 'identifier', $geom], ['string', 'geometry'])));
+                    $geom = Geometry::parse($geom)->getGeometry()->withSRID(0);
+
+                    $query = $query->where(fn (QueryExpression $exp) => $exp
+                        ->isNotNull($dbField)
+                        ->notEq($dbField, '', 'string')
+                        ->add(new FunctionExpression('ST_Within', array_merge($dbGeom, ['test' => $geom]), ['test' => 'geometry']))
+                    );
 
                     break;
             }

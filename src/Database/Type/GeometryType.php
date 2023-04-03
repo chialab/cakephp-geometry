@@ -50,11 +50,22 @@ class GeometryType implements TypeInterface
     }
 
     /**
+     * Check if the value is a null geometry.
+     *
+     * @param mixed $value The value to check.
+     * @return bool
+     */
+    protected static function isNullGeometry($value): bool
+    {
+        return $value === null || $value === '';
+    }
+
+    /**
      * @inheritdoc
      */
     public function toDatabase($value, DriverInterface $driver): ?string
     {
-        if ($value === null) {
+        if (static::isNullGeometry($value)) {
             return null;
         }
 
@@ -72,7 +83,7 @@ class GeometryType implements TypeInterface
      */
     public function toPHP($value, DriverInterface $driver): ?Geometry
     {
-        if ($value === null) {
+        if (static::isNullGeometry($value)) {
             return null;
         }
 
@@ -84,7 +95,7 @@ class GeometryType implements TypeInterface
      */
     public function toStatement($value, DriverInterface $driver): int
     {
-        if ($value === null) {
+        if (static::isNullGeometry($value)) {
             return PDO::PARAM_NULL;
         }
 
@@ -96,7 +107,7 @@ class GeometryType implements TypeInterface
      */
     public function marshal($value): ?Geometry
     {
-        if ($value === null) {
+        if (static::isNullGeometry($value)) {
             return null;
         }
 
