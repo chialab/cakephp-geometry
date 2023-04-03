@@ -57,12 +57,14 @@ class Geometry implements \JsonSerializable
                 // Not a WKB string.
             }
 
-            try {
-                [$wkb, $srid] = [substr($geometry, 4), bindec(substr($geometry, 0, 4))];
+            if (strlen($geometry) > 4) {
+                try {
+                    [$wkb, $srid] = [substr($geometry, 4), bindec(substr($geometry, 0, 4))];
 
-                return new static((new WKBReader())->read($wkb, $srid));
-            } catch (GeometryIOException $e) {
-                // Not a WKB string with SRID prefix.
+                    return new static((new WKBReader())->read($wkb, $srid));
+                } catch (GeometryIOException $e) {
+                    // Not a WKB string with SRID prefix.
+                }
             }
 
             try {
