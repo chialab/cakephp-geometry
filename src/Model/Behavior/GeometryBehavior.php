@@ -73,8 +73,7 @@ class GeometryBehavior extends Behavior
                     $query = $query->where(fn (QueryExpression $exp) => $exp
                         ->isNotNull($dbField)
                         ->notEq($dbField, '', 'string')
-                        ->add(new FunctionExpression('ST_Intersects', array_merge($dbGeom, ['test' => $geom]), ['test' => 'geometry']))
-                    );
+                        ->add(new FunctionExpression('ST_Intersects', array_merge($dbGeom, ['test' => $geom]), ['test' => 'geometry'])));
 
                     break;
                 case 'within':
@@ -83,8 +82,7 @@ class GeometryBehavior extends Behavior
                     $query = $query->where(fn (QueryExpression $exp) => $exp
                         ->isNotNull($dbField)
                         ->notEq($dbField, '', 'string')
-                        ->add(new FunctionExpression('ST_Within', array_merge($dbGeom, ['test' => $geom]), ['test' => 'geometry']))
-                    );
+                        ->add(new FunctionExpression('ST_Within', array_merge($dbGeom, ['test' => $geom]), ['test' => 'geometry'])));
 
                     break;
             }
