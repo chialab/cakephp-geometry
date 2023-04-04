@@ -3,18 +3,10 @@ declare(strict_types=1);
 
 namespace Chialab\Geometry\Database\Type;
 
-use Brick\Geo\Exception\GeometryException;
-use Brick\Geo\Exception\GeometryIOException;
-use Brick\Geo\Geometry as BrickGeometry;
-use Brick\Geo\IO\EWKBReader;
-use Brick\Geo\IO\EWKTReader;
-use Brick\Geo\IO\GeoJSONReader;
-use Brick\Geo\IO\WKBReader;
 use Cake\Database\Driver;
 use Cake\Database\DriverInterface;
 use Cake\Database\TypeInterface;
 use Chialab\Geometry\Geometry;
-use InvalidArgumentException;
 use PDO;
 
 /**
@@ -58,42 +50,14 @@ class GeometryType implements TypeInterface
     }
 
     /**
-     * Parse string or JSON into Geometry object.
+     * Check if the value is a null geometry.
      *
-     * @param mixed $geometry Geometry.
-     * @return \Brick\Geo\Geometry
+     * @param mixed $value The value to check.
+     * @return bool
      */
-    protected static function parseGeometry($geometry): BrickGeometry
+    protected static function isNullGeometry($value): bool
     {
-        if ($geometry instanceof Geometry) {
-            return $geometry->getGeometry();
-        }
-
-        if ($geometry instanceof BrickGeometry) {
-            return $geometry;
-        }
-
-        if (is_string($geometry)) {
-            try {
-                return (new EWKBReader())->read($geometry);
-            } catch (GeometryIOException $e) {
-                // Not a WKB string.
-            }
-
-            try {
-                return (new EWKTReader())->read($geometry);
-            } catch (GeometryIOException $e) {
-                // Not a WKT string.
-            }
-        }
-
-        try {
-            return (new GeoJSONReader())->read(is_string($geometry) ? $geometry : json_encode($geometry));
-        } catch (GeometryException $e) {
-            // Not a GeoJSON.
-        }
-
-        throw new InvalidArgumentException('Could not parse geometry object');
+        return $value === null || $value === '';
     }
 
     /**
@@ -101,11 +65,11 @@ class GeometryType implements TypeInterface
      */
     public function toDatabase($value, DriverInterface $driver): ?string
     {
-        if ($value === null) {
+        if (static::isNullGeometry($value)) {
             return null;
         }
 
-        $geometry = static::parseGeometry($value);
+        $geometry = Geometry::parse($value)->getGeometry();
         $wkb = $geometry->asBinary();
         if ($driver instanceof Driver\Mysql) {
             $wkb = pack('V', $geometry->SRID()) . $wkb;
@@ -119,17 +83,11 @@ class GeometryType implements TypeInterface
      */
     public function toPHP($value, DriverInterface $driver): ?Geometry
     {
-        if ($value === null) {
+        if (static::isNullGeometry($value)) {
             return null;
         }
 
-        [$wkb, $srid] = [$value, 0];
-        if ($driver instanceof Driver\Mysql) {
-            [$wkb, $srid] = [substr($value, 4), bindec(substr($value, 0, 4))];
-        }
-        $reader = new WKBReader();
-
-        return new Geometry($reader->read($wkb, $srid));
+        return Geometry::parse($value);
     }
 
     /**
@@ -137,7 +95,7 @@ class GeometryType implements TypeInterface
      */
     public function toStatement($value, DriverInterface $driver): int
     {
-        if ($value === null) {
+        if (static::isNullGeometry($value)) {
             return PDO::PARAM_NULL;
         }
 
@@ -149,11 +107,11 @@ class GeometryType implements TypeInterface
      */
     public function marshal($value): ?Geometry
     {
-        if ($value === null) {
+        if (static::isNullGeometry($value)) {
             return null;
         }
 
-        return new Geometry(static::parseGeometry($value));
+        return Geometry::parse($value);
     }
 
     /**
