@@ -28,7 +28,7 @@ class Geometry implements \JsonSerializable
     /**
      * Serialization format.
      */
-    protected static ?string $serializeAs;
+    protected static ?string $serializeAs = null;
 
     /**
      * Create a geometry wrapper.
