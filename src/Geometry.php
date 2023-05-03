@@ -35,7 +35,7 @@ class Geometry implements \JsonSerializable
      *
      * @param \Brick\Geo\Geometry $geometry The geometry instance.
      */
-    public function __construct(BrickGeometry $geometry)
+    final public function __construct(BrickGeometry $geometry)
     {
         $this->geometry = $geometry;
     }
@@ -63,7 +63,7 @@ class Geometry implements \JsonSerializable
                 // Not a WKB string.
             }
 
-            if (strlen($geometry) > 4) {
+            if (strspn($geometry, '01', 0, 4) === 4) {
                 try {
                     [$wkb, $srid] = [substr($geometry, 4), bindec(substr($geometry, 0, 4))];
 

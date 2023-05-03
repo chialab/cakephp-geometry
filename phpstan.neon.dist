@@ -1,0 +1,12 @@
+parameters:
+  bootstrapFiles:
+    - tests/bootstrap.php
+  paths:
+    - src
+    - tests
+  phpVersion: 70400
+  level: 4
+  ignoreErrors:
+    - message: '#Call to static method map\(\) on an unknown class Cake\\Database\\Type.#'
+      paths:
+        - src/Plugin.php

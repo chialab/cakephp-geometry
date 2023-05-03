@@ -46,7 +46,7 @@ class GeometryBehavior extends Behavior
      */
     public function findGeo(Query $query, array $options): Query
     {
-        $options = array_intersect_key($options, array_flip(['intersects', 'within']));
+        $options = array_intersect_key($options, array_flip(['intersects', 'within', 'contains']));
 
         $dbField = $this->_table->aliasField($this->getConfigOrFail('geometryField'));
         $dbGeom = [$dbField => 'identifier'];
@@ -83,6 +83,16 @@ class GeometryBehavior extends Behavior
                         ->isNotNull($dbField)
                         ->notEq($dbField, '', 'string')
                         ->add(new FunctionExpression('ST_Within', array_merge($dbGeom, ['test' => $geom]), ['test' => 'geometry'])));
+
+                    break;
+
+                case 'contains':
+                    $geom = Geometry::parse($geom)->getGeometry()->withSRID(0);
+
+                    $query = $query->where(fn (QueryExpression $exp) => $exp
+                        ->isNotNull($dbField)
+                        ->notEq($dbField, '', 'string')
+                        ->add(new FunctionExpression('ST_Contains', array_merge($dbGeom, ['test' => $geom]), ['test' => 'geometry'])));
 
                     break;
             }
