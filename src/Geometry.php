@@ -63,9 +63,9 @@ class Geometry implements \JsonSerializable
                 // Not a WKB string.
             }
 
-            if (strspn($geometry, '01', 0, 4) === 4) {
+            if (strlen($geometry) > 4) {
                 try {
-                    [$wkb, $srid] = [substr($geometry, 4), bindec(substr($geometry, 0, 4))];
+                    [$wkb, $srid] = [substr($geometry, 4), ...unpack('L', $geometry)];
 
                     return new static((new WKBReader())->read($wkb, $srid));
                 } catch (GeometryIOException $e) {
