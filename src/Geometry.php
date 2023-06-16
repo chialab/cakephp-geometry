@@ -104,7 +104,7 @@ class Geometry implements \JsonSerializable
      *
      * @return mixed The serialized geometry.
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         switch (static::$serializeAs) {
             case 'wkb':
