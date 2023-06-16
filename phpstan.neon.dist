@@ -4,9 +4,5 @@ parameters:
   paths:
     - src
     - tests
-  phpVersion: 70400
+  phpVersion: 80000
   level: 4
-  ignoreErrors:
-    - message: '#Call to static method map\(\) on an unknown class Cake\\Database\\Type.#'
-      paths:
-        - src/Plugin.php

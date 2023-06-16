@@ -34,7 +34,7 @@ class GeometryType implements TypeInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getName(): string
     {
@@ -42,7 +42,7 @@ class GeometryType implements TypeInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getBaseType(): string
     {
@@ -55,13 +55,13 @@ class GeometryType implements TypeInterface
      * @param mixed $value The value to check.
      * @return bool
      */
-    protected static function isNullGeometry($value): bool
+    protected static function isNullGeometry(mixed $value): bool
     {
         return $value === null || $value === '';
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function toDatabase($value, DriverInterface $driver): ?string
     {
@@ -79,7 +79,7 @@ class GeometryType implements TypeInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function toPHP($value, DriverInterface $driver): ?Geometry
     {
@@ -91,7 +91,7 @@ class GeometryType implements TypeInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function toStatement($value, DriverInterface $driver): int
     {
@@ -103,7 +103,7 @@ class GeometryType implements TypeInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function marshal($value): ?Geometry
     {
@@ -115,7 +115,7 @@ class GeometryType implements TypeInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function newId(): ?string
     {

@@ -4,13 +4,14 @@
     "type": "cakephp-plugin",
     "license": "MIT",
     "require": {
-        "php": "^7.4 || ^8.0",
-        "cakephp/cakephp": "^3.10 || ^4.2",
+        "php": "^8.0",
+        "ext-json": "*",
+        "cakephp/cakephp": "^4.2",
         "brick/geo": "^0.7.1"
     },
     "require-dev": {
-        "cakephp/cakephp-codesniffer": "^4.2",
-        "phpunit/phpunit": "^8.5 || ^9.3",
+        "cakephp/cakephp-codesniffer": "^5.1",
+        "phpunit/phpunit": "^9.3",
         "phpstan/phpstan": "^1.10"
     },
     "autoload": {
@@ -29,8 +30,8 @@
             "@test",
             "@cs-check"
         ],
-        "cs-check": "phpcs --colors -p src/ tests/",
-        "cs-fix": "phpcbf --colors -p src/ tests/",
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
         "stan": "phpstan analyse",
         "test": "phpunit --colors=always"
     },

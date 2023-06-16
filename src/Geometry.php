@@ -14,11 +14,12 @@ use Brick\Geo\IO\WKBReader;
 use Brick\Geo\IO\WKBWriter;
 use Brick\Geo\IO\WKTWriter;
 use InvalidArgumentException;
+use JsonSerializable;
 
 /**
  * Serializable Geometry wrapper.
  */
-class Geometry implements \JsonSerializable
+class Geometry implements JsonSerializable
 {
     /**
      * The brick geometry instance.
@@ -46,7 +47,7 @@ class Geometry implements \JsonSerializable
      * @param mixed $geometry Geometry.
      * @return static
      */
-    public static function parse($geometry): self
+    public static function parse(mixed $geometry): self
     {
         if ($geometry instanceof static) {
             return clone $geometry;
@@ -104,7 +105,7 @@ class Geometry implements \JsonSerializable
      *
      * @return mixed The serialized geometry.
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         switch (static::$serializeAs) {
             case 'wkb':
@@ -133,7 +134,7 @@ class Geometry implements \JsonSerializable
      *
      * @return array
      */
-    public function __debugInfo()
+    public function __debugInfo(): array
     {
         return [
             'type' => $this->geometry->geometryType(),
