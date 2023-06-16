@@ -8,6 +8,7 @@ use Cake\Database\Expression\QueryExpression;
 use Cake\ORM\Behavior;
 use Cake\ORM\Query;
 use Chialab\Geometry\Geometry;
+use RuntimeException;
 
 /**
  * Geometry behavior
@@ -62,7 +63,7 @@ class GeometryBehavior extends Behavior
                 $dbGeom = [new FunctionExpression('ST_GeomFromWKB', $dbGeom)];
                 break;
             default:
-                throw new \RuntimeException('Invalid geometry storage format');
+                throw new RuntimeException('Invalid geometry storage format');
         }
 
         foreach ($options as $op => $geom) {

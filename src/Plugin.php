@@ -5,7 +5,6 @@ namespace Chialab\Geometry;
 
 use Cake\Core\BasePlugin;
 use Cake\Core\PluginApplicationInterface;
-use Cake\Database\Type;
 use Cake\Database\TypeFactory;
 use Chialab\Geometry\Database\Type\GeometryType;
 
@@ -21,12 +20,6 @@ class Plugin extends BasePlugin
     {
         parent::bootstrap($app);
 
-        if (class_exists(TypeFactory::class)) {
-            // CakePHP 4.x
-            TypeFactory::map('geometry', GeometryType::class);
-        } else {
-            // CakePHP 3.x
-            Type::map('geometry', GeometryType::class);
-        }
+        TypeFactory::map('geometry', GeometryType::class);
     }
 }
