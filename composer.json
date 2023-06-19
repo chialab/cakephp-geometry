@@ -7,7 +7,7 @@
         "php": "^8.0",
         "ext-json": "*",
         "cakephp/cakephp": "^4.2",
-        "brick/geo": "^0.7.1"
+        "brick/geo": "^0.9.0"
     },
     "require-dev": {
         "cakephp/cakephp-codesniffer": "^5.1",
