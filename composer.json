@@ -6,7 +6,7 @@
     "require": {
         "php": "^8.0",
         "ext-json": "*",
-        "cakephp/cakephp": "^4.2",
+        "cakephp/cakephp": "^5.1",
         "brick/geo": "^0.7.1"
     },
     "require-dev": {
