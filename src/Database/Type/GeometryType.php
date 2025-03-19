@@ -139,7 +139,7 @@ class GeometryType implements TypeInterface
      * @param (callable(\Brick\Geo\Geometry $geometry): \Brick\Geo\Geometry) $decorator The decorator method.
      * @return $this
      */
-    public function withDecorator(callable $decorator)
+    public function withDecorator(callable $decorator): self
     {
         $this->decorator = $decorator;
 
