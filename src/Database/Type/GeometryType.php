@@ -26,9 +26,9 @@ class GeometryType implements TypeInterface
     /**
      * Decorator method.
      *
-     * @var (callable(\Brick\Geo\Geometry $geometry): \Brick\Geo\Geometry)|null
+     * @var (callable(\Brick\Geo\Geometry): \Brick\Geo\Geometry)|null
      */
-    protected ?callable $decorator = null;
+    protected $decorator = null;
 
     /**
      * GeometryType constructor.
@@ -136,10 +136,10 @@ class GeometryType implements TypeInterface
      * Add a decorator to the type converter.
      * Useful to set the SRID of the geometry.
      *
-     * @param (callable(\Brick\Geo\Geometry $geometry): \Brick\Geo\Geometry) $decorator The decorator method.
-     * @return $this
+     * @param (callable(\Brick\Geo\Geometry): \Brick\Geo\Geometry) $decorator The decorator method.
+     * @return static
      */
-    public function withDecorator(callable $decorator): self
+    public function withDecorator(callable $decorator): static
     {
         $this->decorator = $decorator;
 
