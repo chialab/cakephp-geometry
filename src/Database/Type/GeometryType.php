@@ -78,7 +78,7 @@ class GeometryType implements TypeInterface
 
         $geometry = Geometry::parse($value)->getGeometry();
         if ($this->decorator !== null) {
-            $geometry = ($this->decorator)($geometry);
+            $geometry = call_user_func($this->decorator, $geometry);
         }
         $wkb = $geometry->asBinary();
         if ($driver instanceof Driver\Mysql) {
