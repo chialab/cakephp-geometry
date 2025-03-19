@@ -28,7 +28,7 @@ class GeometryType implements TypeInterface
      *
      * @var (callable(\Brick\Geo\Geometry $geometry): \Brick\Geo\Geometry)|null
      */
-    protected $decorator = null;
+    protected ?callable $decorator = null;
 
     /**
      * GeometryType constructor.
