@@ -24,6 +24,13 @@ class GeometryType implements TypeInterface
     protected string $name = 'geometry';
 
     /**
+     * Decorator method.
+     *
+     * @var (callable(\Brick\Geo\Geometry): \Brick\Geo\Geometry)|null
+     */
+    protected $decorator = null;
+
+    /**
      * GeometryType constructor.
      *
      * @param string $name Type name.
@@ -70,6 +77,9 @@ class GeometryType implements TypeInterface
         }
 
         $geometry = Geometry::parse($value)->getGeometry();
+        if ($this->decorator !== null) {
+            $geometry = call_user_func($this->decorator, $geometry);
+        }
         $wkb = $geometry->asBinary();
         if ($driver instanceof Driver\Mysql) {
             $wkb = pack('V', $geometry->SRID()) . $wkb;
@@ -120,5 +130,19 @@ class GeometryType implements TypeInterface
     public function newId(): ?string
     {
         return null;
+    }
+
+    /**
+     * Add a decorator to the type converter.
+     * Useful to set the SRID of the geometry.
+     *
+     * @param (callable(\Brick\Geo\Geometry): \Brick\Geo\Geometry) $decorator The decorator method.
+     * @return static
+     */
+    public function withDecorator(callable $decorator): static
+    {
+        $this->decorator = $decorator;
+
+        return $this;
     }
 }
