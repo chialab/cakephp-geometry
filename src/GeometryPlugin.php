@@ -11,7 +11,7 @@ use Chialab\Geometry\Database\Type\GeometryType;
 /**
  * Plugin for Chialab\Geometry
  */
-class Plugin extends BasePlugin
+class GeometryPlugin extends BasePlugin
 {
     /**
      * @inheritDoc
