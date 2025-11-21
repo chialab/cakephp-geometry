@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace Chialab\Geometry\Database\Type;
 
 use Cake\Database\Driver;
-use Cake\Database\DriverInterface;
-use Cake\Database\TypeInterface;
+use Cake\Database\Type\BaseType;
 use Chialab\Geometry\Geometry;
 use PDO;
 
@@ -14,47 +13,14 @@ use PDO;
  *
  * @package Chialab\Geometry\Type
  */
-class GeometryType implements TypeInterface
+class GeometryType extends BaseType
 {
-    /**
-     * Type name.
-     *
-     * @var string
-     */
-    protected string $name = 'geometry';
-
     /**
      * Decorator method.
      *
      * @var (callable(\Brick\Geo\Geometry): \Brick\Geo\Geometry)|null
      */
     protected $decorator = null;
-
-    /**
-     * GeometryType constructor.
-     *
-     * @param string $name Type name.
-     */
-    public function __construct(string $name)
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getBaseType(): string
-    {
-        return $this->name;
-    }
 
     /**
      * Check if the value is a null geometry.
@@ -70,19 +36,20 @@ class GeometryType implements TypeInterface
     /**
      * @inheritDoc
      */
-    public function toDatabase($value, DriverInterface $driver): ?string
+    public function toDatabase(mixed $value, Driver $driver): mixed
     {
         if (static::isNullGeometry($value)) {
             return null;
         }
 
         $geometry = Geometry::parse($value)->getGeometry();
+
         if ($this->decorator !== null) {
             $geometry = call_user_func($this->decorator, $geometry);
         }
         $wkb = $geometry->asBinary();
         if ($driver instanceof Driver\Mysql) {
-            $wkb = pack('V', $geometry->SRID()) . $wkb;
+            $wkb = pack('V', $geometry->srid()) . $wkb;
         }
 
         return $wkb;
@@ -91,7 +58,7 @@ class GeometryType implements TypeInterface
     /**
      * @inheritDoc
      */
-    public function toPHP($value, DriverInterface $driver): ?Geometry
+    public function toPHP($value, Driver $driver): ?Geometry
     {
         if (static::isNullGeometry($value)) {
             return null;
@@ -103,7 +70,7 @@ class GeometryType implements TypeInterface
     /**
      * @inheritDoc
      */
-    public function toStatement($value, DriverInterface $driver): int
+    public function toStatement($value, Driver $driver): int
     {
         if (static::isNullGeometry($value)) {
             return PDO::PARAM_NULL;
@@ -122,14 +89,6 @@ class GeometryType implements TypeInterface
         }
 
         return Geometry::parse($value);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function newId(): ?string
-    {
-        return null;
     }
 
     /**
