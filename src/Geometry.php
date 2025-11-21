@@ -115,7 +115,7 @@ class Geometry implements JsonSerializable
     {
         switch (static::$serializeAs) {
             case 'wkb':
-                return (new WKBWriter())->write($this->geometry);
+                return (new WkbWriter())->write($this->geometry);
 
             case 'wkt':
                 $locale = setlocale(LC_NUMERIC, 0);

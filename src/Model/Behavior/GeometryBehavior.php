@@ -18,7 +18,7 @@ class GeometryBehavior extends Behavior
     /**
      * @inheritDoc
      */
-    protected $_defaultConfig = [
+    protected array $_defaultConfig = [
         'geometryField' => 'geometry',
         'storedAs' => 'geometry',
         'implementedFinders' => [

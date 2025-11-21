@@ -4,5 +4,5 @@ parameters:
   paths:
     - src
     - tests
-  phpVersion: 80000
+  phpVersion: 80100
   level: 4
