@@ -1,12 +1,15 @@
 <?xml version="1.0"?>
 <ruleset name="App">
+    <arg name="encoding=UTF-8"/>
+    <arg name="report=full"/>
+    <arg name="severity=1"/>
+    <arg name="extensions=php"/>
+
     <file>./src</file>
     <file>./tests</file>
 
     <arg name="colors" />
     <arg value="p" />
-
-    <config name="installed_paths" value="../../cakephp/cakephp-codesniffer"/>
 
     <rule ref="CakePHP"/>
 </ruleset>
