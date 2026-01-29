@@ -13,16 +13,16 @@ on:
 jobs:
   cs:
     name: 'Check coding style'
-    runs-on: 'ubuntu-22.04'
+    runs-on: 'ubuntu-latest'
 
     steps:
       - name: 'Checkout current revision'
-        uses: 'actions/checkout@v4'
+        uses: 'actions/checkout@v6'
 
       - name: 'Setup PHP'
         uses: 'shivammathur/setup-php@v2'
         with:
-          php-version: '8.1'
+          php-version: '8.5'
           tools: 'composer'
           extensions: 'mbstring, intl'
           coverage: 'none'
@@ -32,7 +32,7 @@ jobs:
         run: 'echo "::set-output name=path::$(composer global config cache-dir)"'
 
       - name: 'Share Composer cache across runs'
-        uses: 'actions/cache@v4'
+        uses: 'actions/cache@v5'
         with:
           path: '${{ steps.cachedir.outputs.path }}'
           key: "composer-${{ github.job }}-${{ hashFiles('**/composer.json') }}"
@@ -48,17 +48,17 @@ jobs:
 
   stan:
     name: 'Static code analyzer'
-    runs-on: 'ubuntu-22.04'
+    runs-on: 'ubuntu-latest'
     continue-on-error: true
 
     steps:
       - name: 'Checkout current revision'
-        uses: 'actions/checkout@v4'
+        uses: 'actions/checkout@v6'
 
       - name: 'Setup PHP'
         uses: 'shivammathur/setup-php@v2'
         with:
-          php-version: '8.1'
+          php-version: '8.5'
           tools: 'composer'
           extensions: 'mbstring, intl'
           coverage: 'none'
@@ -68,7 +68,7 @@ jobs:
         run: 'echo "::set-output name=path::$(composer global config cache-dir)"'
 
       - name: 'Share Composer cache across runs'
-        uses: 'actions/cache@v4'
+        uses: 'actions/cache@v5'
         with:
           path: '${{ steps.cachedir.outputs.path }}'
           key: "composer-${{ github.job }}-${{ hashFiles('**/composer.json') }}"
@@ -81,3 +81,54 @@ jobs:
 
       - name: 'Run PHP STAN'
         run: 'composer run-script stan'
+
+  unit:
+    name: 'Unit tests'
+    runs-on: 'ubuntu-latest'
+    continue-on-error: true
+    strategy:
+      matrix:
+        php-version: ['8.1', '8.2', '8.3', '8.4', '8.5']
+    env:
+      PHP_VERSION: '${{ matrix.php-version }}'
+    permissions:
+      id-token: write
+
+    steps:
+      - name: 'Checkout current revision'
+        uses: 'actions/checkout@v6'
+
+      - name: 'Setup PHP'
+        uses: 'shivammathur/setup-php@v2'
+        with:
+          php-version: '${{ matrix.php-version }}'
+          tools: 'composer'
+          extensions: 'mbstring, intl, xdebug'
+          coverage: 'none'
+
+      - name: 'Discover Composer cache directory'
+        id: 'cachedir'
+        run: 'echo "::set-output name=path::$(composer global config cache-dir)"'
+
+      - name: 'Share Composer cache across runs'
+        uses: 'actions/cache@v5'
+        with:
+          path: '${{ steps.cachedir.outputs.path }}'
+          key: "composer-${{ github.job }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.json') }}"
+          restore-keys: |
+            composer-${{ github.job }}-${{ matrix.php-version }}-
+            composer-${{ github.job }}-
+            composer-
+
+      - name: 'Install dependencies with Composer'
+        run: 'composer install --prefer-dist --no-interaction'
+
+      - name: 'Run PHPUnit'
+        run: 'composer run test -- --path-coverage --coverage-clover=clover.xml'
+
+      - name: 'Export coverage results'
+        uses: 'codecov/codecov-action@v5'
+        with:
+          files: './clover.xml'
+          use_oidc: true
+          env_vars: PHP_VERSION
