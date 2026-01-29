@@ -103,8 +103,8 @@ jobs:
         with:
           php-version: '${{ matrix.php-version }}'
           tools: 'composer'
-          extensions: 'mbstring, intl, xdebug'
-          coverage: 'none'
+          extensions: 'mbstring, intl'
+          coverage: 'xdebug'
 
       - name: 'Discover Composer cache directory'
         id: 'cachedir'
