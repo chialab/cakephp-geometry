@@ -18,7 +18,7 @@ class GeometryBehavior extends Behavior
     /**
      * @inheritDoc
      */
-    protected $_defaultConfig = [
+    protected array $_defaultConfig = [
         'geometryField' => 'geometry',
         'storedAs' => 'geometry',
         'implementedFinders' => [
@@ -69,31 +69,43 @@ class GeometryBehavior extends Behavior
         foreach ($options as $op => $geom) {
             switch ($op) {
                 case 'intersects':
-                    $geom = Geometry::parse($geom)->getGeometry()->withSRID(0);
+                    $geom = Geometry::parse($geom)->getGeometry()->withSrid(0);
 
-                    $query = $query->where(fn (QueryExpression $exp) => $exp
+                    $query = $query->where(fn(QueryExpression $exp) => $exp
                         ->isNotNull($dbField)
                         ->notEq($dbField, '', 'string')
-                        ->add(new FunctionExpression('ST_Intersects', array_merge($dbGeom, ['test' => $geom]), ['test' => 'geometry'])));
+                        ->add(new FunctionExpression(
+                            'ST_Intersects',
+                            array_merge($dbGeom, ['test' => $geom]),
+                            ['test' => 'geometry'],
+                        )));
 
                     break;
                 case 'within':
-                    $geom = Geometry::parse($geom)->getGeometry()->withSRID(0);
+                    $geom = Geometry::parse($geom)->getGeometry()->withSrid(0);
 
-                    $query = $query->where(fn (QueryExpression $exp) => $exp
+                    $query = $query->where(fn(QueryExpression $exp) => $exp
                         ->isNotNull($dbField)
                         ->notEq($dbField, '', 'string')
-                        ->add(new FunctionExpression('ST_Within', array_merge($dbGeom, ['test' => $geom]), ['test' => 'geometry'])));
+                        ->add(new FunctionExpression(
+                            'ST_Within',
+                            array_merge($dbGeom, ['test' => $geom]),
+                            ['test' => 'geometry'],
+                        )));
 
                     break;
 
                 case 'contains':
-                    $geom = Geometry::parse($geom)->getGeometry()->withSRID(0);
+                    $geom = Geometry::parse($geom)->getGeometry()->withSrid(0);
 
-                    $query = $query->where(fn (QueryExpression $exp) => $exp
+                    $query = $query->where(fn(QueryExpression $exp) => $exp
                         ->isNotNull($dbField)
                         ->notEq($dbField, '', 'string')
-                        ->add(new FunctionExpression('ST_Contains', array_merge($dbGeom, ['test' => $geom]), ['test' => 'geometry'])));
+                        ->add(new FunctionExpression(
+                            'ST_Contains',
+                            array_merge($dbGeom, ['test' => $geom]),
+                            ['test' => 'geometry'],
+                        )));
 
                     break;
             }

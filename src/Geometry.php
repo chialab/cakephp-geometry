@@ -4,15 +4,15 @@ declare(strict_types=1);
 namespace Chialab\Geometry;
 
 use Brick\Geo\Exception\GeometryException;
-use Brick\Geo\Exception\GeometryIOException;
+use Brick\Geo\Exception\GeometryIoException;
 use Brick\Geo\Geometry as BrickGeometry;
-use Brick\Geo\IO\EWKBReader;
-use Brick\Geo\IO\EWKTReader;
-use Brick\Geo\IO\GeoJSONReader;
-use Brick\Geo\IO\GeoJSONWriter;
-use Brick\Geo\IO\WKBReader;
-use Brick\Geo\IO\WKBWriter;
-use Brick\Geo\IO\WKTWriter;
+use Brick\Geo\Io\EwkbReader;
+use Brick\Geo\Io\EwktReader;
+use Brick\Geo\Io\GeoJsonReader;
+use Brick\Geo\Io\GeoJsonWriter;
+use Brick\Geo\Io\WkbReader;
+use Brick\Geo\Io\WkbWriter;
+use Brick\Geo\Io\WktWriter;
 use InvalidArgumentException;
 use JsonSerializable;
 
@@ -58,33 +58,39 @@ class Geometry implements JsonSerializable
         }
 
         if (is_string($geometry)) {
+            // Hex geometry
+            if (preg_match('/[A-F0-9]{12,}/i', $geometry)) {
+                $geometry = hex2bin($geometry);
+            }
             try {
-                return new static((new EWKBReader())->read($geometry));
-            } catch (GeometryIOException $e) {
-                // Not a WKB string.
+                return new static((new EwkbReader())->read($geometry));
+            } catch (GeometryIoException $e) {
+                // Not a Ewkb (PostGis) string.
             }
 
             if (strlen($geometry) > 4) {
                 try {
                     [$wkb, $srid] = [substr($geometry, 4), ...unpack('L', $geometry)];
 
-                    return new static((new WKBReader())->read($wkb, $srid));
-                } catch (GeometryIOException $e) {
-                    // Not a WKB string with SRID prefix.
+                    return new static((new WkbReader())->read($wkb, (int)$srid));
+                } catch (GeometryIoException $e) {
+                    // Not a Wkb string with SRID prefix.
                 }
             }
 
             try {
-                return new static((new EWKTReader())->read($geometry));
-            } catch (GeometryIOException $e) {
-                // Not a WKT string.
+                return new static((new EwktReader())->read($geometry));
+            } catch (GeometryIoException $e) {
+                // Not a Wkt string.
             }
         }
 
         try {
-            return new static((new GeoJSONReader())->read(is_string($geometry) ? $geometry : json_encode($geometry)));
+            $json = is_string($geometry) ? $geometry : json_encode($geometry);
+
+            return new static((new GeoJsonReader())->read($json));
         } catch (GeometryException $e) {
-            // Not a GeoJSON.
+            // Not a GeoJson.
         }
 
         throw new InvalidArgumentException('Could not parse geometry object');
@@ -109,13 +115,13 @@ class Geometry implements JsonSerializable
     {
         switch (static::$serializeAs) {
             case 'wkb':
-                return (new WKBWriter())->write($this->geometry);
+                return (new WkbWriter())->write($this->geometry);
 
             case 'wkt':
                 $locale = setlocale(LC_NUMERIC, 0);
                 setlocale(LC_NUMERIC, 'C');
                 try {
-                    $writer = new WKTWriter();
+                    $writer = new WktWriter();
                     $writer->setPrettyPrint(false);
 
                     return $writer->write($this->geometry);
@@ -125,7 +131,7 @@ class Geometry implements JsonSerializable
 
             case 'geojson':
             default:
-                return (new GeoJSONWriter())->writeRaw($this->geometry);
+                return (new GeoJsonWriter())->writeRaw($this->geometry);
         }
     }
 
@@ -138,7 +144,7 @@ class Geometry implements JsonSerializable
     {
         return [
             'type' => $this->geometry->geometryType(),
-            'wkt' => (new WKTWriter())->write($this->geometry),
+            'wkt' => (new WktWriter())->write($this->geometry),
         ];
     }
 
