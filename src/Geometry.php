@@ -59,7 +59,7 @@ class Geometry implements JsonSerializable
 
         if (is_string($geometry)) {
             // Hex geometry
-            if (preg_match('/[A-F0-9]{12,}/i', $geometry)) {
+            if (preg_match('/^(?:[A-F0-9]{2}){6,}$/i', $geometry)) {
                 $geometry = hex2bin($geometry);
             }
             try {
